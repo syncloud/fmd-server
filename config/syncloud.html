@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FMD Server - registration token</title>
+<style>
+:root { color-scheme: light dark; }
+body {
+  margin: 0; padding: 2rem 1rem;
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #f6f7f9; color: #1f2933;
+}
+main { max-width: 40rem; margin: 0 auto; }
+h1 { font-size: 1.4rem; margin: 0 0 1.5rem; }
+code, .token {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.token {
+  display: block; padding: 1rem; margin: 0 0 1.5rem;
+  background: #fff; border: 1px solid #d6dae0; border-radius: 8px;
+  font-size: 1.1rem; word-break: break-all; user-select: all;
+}
+ol { padding-left: 1.2rem; }
+li { margin-bottom: .5rem; }
+.note { color: #5b6672; font-size: .9rem; margin-top: 2rem; }
+a { color: #2563eb; }
+@media (prefers-color-scheme: dark) {
+  body { background: #16191d; color: #e6e8ea; }
+  .token { background: #1f2429; border-color: #333a42; }
+  .note { color: #97a1ab; }
+  a { color: #7aa7ff; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>FMD Server registration token</h1>
+
+<span class="token">{{ .RegistrationToken }}</span>
+
+<p>Registration is closed on this server: the token above is required to add a phone.</p>
+
+<ol>
+<li>Install <a href="https://f-droid.org/packages/de.nulide.findmydevice/">FMD</a> from F-Droid on the phone.</li>
+<li>In FMD, open the server settings and set the server URL to <code>{{ .Url }}</code>.</li>
+<li>Pick a user name and a password, and paste the token above as the registration token.</li>
+<li>Register. Then sign in at <a href="{{ .Url }}">{{ .Url }}</a> with that user name and password to locate the phone.</li>
+</ol>
+
+<p class="note">
+The password you choose in step 3 also decrypts the phone's data in your browser - the server never
+sees it, and it cannot be reset. Register each phone separately.
+Keep this token private; anyone who has it can create accounts on this server.
+</p>
+</main>
+</body>
+</html>

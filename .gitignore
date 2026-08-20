@@ -1,0 +1,8 @@
+.idea
+build/
+artifact/
+*.snap
+version
+package.name
+node_modules/
+test-results/
