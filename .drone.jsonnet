@@ -8,6 +8,7 @@ local platform = '26.08.01';
 local playwright = 'v1.59.1-jammy';
 local store_publisher = 'stable-346';
 local distros = ['bookworm', 'buster'];
+local distro_default = 'bookworm';
 
 local platform_image(distro) =
   'syncloud/platform-' + distro + ':' + platform;
@@ -69,19 +70,44 @@ local build(arch, ui) = [{
          {
            name: 'test ' + distro,
            image: 'python:' + python,
-           commands: ['./test/ci-test.sh ' + distro + ' ' + arch],
+           commands: ['./test/ci-test.sh ' + distro + ' ' + arch + ' test.py'],
          }
          for distro in distros
        ] + (if ui then [
          {
            name: 'e2e desktop',
            image: 'mcr.microsoft.com/playwright:' + playwright,
-           commands: ['./test/e2e/run.sh e2e specs desktop'],
+           commands: ['./test/e2e/run.sh e2e specs/01-smoke.spec.ts desktop'],
          },
          {
            name: 'e2e mobile',
            image: 'mcr.microsoft.com/playwright:' + playwright,
            commands: ['./test/e2e/run.sh e2e specs/01-smoke.spec.ts mobile'],
+         },
+         {
+           name: 'e2e pairing',
+           image: 'mcr.microsoft.com/playwright:' + playwright,
+           commands: ['./test/e2e/run.sh e2e specs/02-pairing.spec.ts desktop'],
+         },
+         {
+           name: 'test-upgrade-prev',
+           image: 'python:' + python,
+           commands: ['./test/ci-test.sh ' + distro_default + ' ' + arch + ' upgrade_prev.py'],
+         },
+         {
+           name: 'e2e-before-upgrade',
+           image: 'mcr.microsoft.com/playwright:' + playwright,
+           commands: ['./test/e2e/run.sh e2e-before-upgrade specs/03-pre-upgrade.spec.ts desktop'],
+         },
+         {
+           name: 'test-upgrade',
+           image: 'python:' + python,
+           commands: ['./test/ci-test.sh ' + distro_default + ' ' + arch + ' upgrade.py'],
+         },
+         {
+           name: 'e2e-after-upgrade',
+           image: 'mcr.microsoft.com/playwright:' + playwright,
+           commands: ['./test/e2e/run.sh e2e-after-upgrade specs/04-post-upgrade.spec.ts desktop'],
          },
        ] else []) + [
     {
