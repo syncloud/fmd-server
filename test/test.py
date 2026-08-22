@@ -37,7 +37,8 @@ def settle(device):
 
 
 def registration_token(device):
-    return device.run_ssh('cat {0}/registration.token'.format(DATA_DIR)).strip()
+    # ssh prints a known-hosts warning into the first command's output
+    return device.run_ssh('cat {0}/registration.token'.format(DATA_DIR)).strip().splitlines()[-1].strip()
 
 
 def register(app_domain, token):
