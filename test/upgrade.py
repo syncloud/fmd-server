@@ -26,7 +26,8 @@ def module_setup(request, device, artifact_dir):
 
 
 def token(device):
-    return device.run_ssh('cat {0}/registration.token'.format(DATA_DIR)).strip()
+    # ssh prints a known-hosts warning into the first command's output
+    return device.run_ssh('cat {0}/registration.token'.format(DATA_DIR)).strip().splitlines()[-1].strip()
 
 
 def test_start(module_setup, app, device_host, domain, device):
