@@ -11,13 +11,15 @@ DATA_DIR = '/var/snap/fmd-server/current'
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+before = {}
+
 
 @pytest.fixture(scope="session")
 def module_setup(request, device, artifact_dir):
     def module_teardown():
         device.run_ssh('mkdir -p {0}'.format(TMP_DIR), throw=False)
         device.run_ssh('journalctl --no-pager | tail -3000 > {0}/upgrade.journalctl.log'.format(TMP_DIR), throw=False)
-        device.scp_from_device('{0}/*'.format(TMP_DIR), artifact_dir)
+        device.scp_from_device('{0}/*'.format(TMP_DIR), artifact_dir, throw=False)
         check_output('chmod -R a+r {0}'.format(artifact_dir), shell=True)
 
     request.addfinalizer(module_teardown)
@@ -27,13 +29,13 @@ def token(device):
     return device.run_ssh('cat {0}/registration.token'.format(DATA_DIR)).strip()
 
 
-@pytest.fixture(scope="session")
-def before(device):
-    return {'token': token(device), 'users': device.run_ssh('snap run fmd-server.ctl listusers')}
-
-
-def test_start(module_setup, before, device_host, app, domain):
+def test_start(module_setup, app, device_host, domain, device):
     add_host_alias(app, device_host, domain)
+    device.activated()
+    before['token'] = token(device)
+    before['users'] = device.run_ssh('snap run fmd-server.ctl listusers')
+    assert 'out of 1' in before['users'], \
+        "the pre-upgrade spec should have registered a phone: {0}".format(before['users'])
 
 
 def test_upgrade(device_host, device_password, app_archive_path, device):
@@ -50,11 +52,11 @@ def test_web_after_upgrade(app_domain):
     assert 'FMD Server' in response.text, response.text[:200]
 
 
-def test_registration_token_survived(device, before):
+def test_registration_token_survived(device):
     assert token(device) == before['token'], \
         "a new token would unpair every phone that has the old one"
 
 
-def test_account_survived(device, before):
+def test_account_survived(device):
     assert 'out of 1' in device.run_ssh('snap run fmd-server.ctl listusers'), \
         "the account registered before the refresh must still exist"
