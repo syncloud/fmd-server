@@ -1,0 +1,23 @@
+DatabaseDir: "{{ .DataDir }}/db"
+
+UnixSocketPath: "{{ .Socket }}"
+UnixSocketChmod: 0660
+
+PortSecure: ""
+PortInsecure: ""
+
+UserIdLength: 5
+
+MaxSavedLoc: 500
+MaxSavedPic: 10
+
+RegistrationToken: "{{ .RegistrationToken }}"
+
+ServerCrt: ""
+ServerKey: ""
+
+RemoteIpHeader: "X-Real-IP"
+
+TileServerUrl: ""
+
+MetricsAddrPort: ""

@@ -1,0 +1,45 @@
+name: fmd-server
+summary: FMD Server
+description: Find My Device server for the FMD Android app - locate, ring, lock and wipe your devices
+
+apps:
+  fmd-server:
+    user: fmd-server
+    command: bin/service.fmd-server.sh
+    daemon: simple
+    restart-condition: always
+    start-timeout: 600s
+    restart-delay: 10s
+
+  nginx:
+    user: fmd-server
+    command: bin/service.nginx.sh
+    daemon: simple
+    restart-condition: always
+    start-timeout: 600s
+    restart-delay: 10s
+
+  ctl:
+    user: fmd-server
+    command: bin/fmd-server-ctl.sh
+
+  cli:
+    command: bin/cli
+
+  registration-token:
+    command: bin/cli registration-token
+
+  storage-change:
+    command: bin/cli storage-change
+
+  access-change:
+    command: bin/cli access-change
+
+  backup-pre-stop:
+    command: bin/cli backup-pre-stop
+
+  restore-pre-start:
+    command: bin/cli restore-pre-start
+
+  restore-post-start:
+    command: bin/cli restore-post-start

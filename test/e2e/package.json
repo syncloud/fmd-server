@@ -1,0 +1,17 @@
+{
+  "name": "fmd-server-e2e",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.59.1",
+    "@types/node": "^26.2.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "@noble/hashes": "^2.3.0"
+  }
+}
